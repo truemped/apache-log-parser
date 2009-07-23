@@ -20,11 +20,14 @@ def parse(filename):
             'status_code':x.group('status_code'),
             'referral':x.group('referral'),
             'agent':x.group('agent'),
+            'bytes':x.group('bytes'),
             }
-    log_re = '(?P<ip>[.\d]+) - - \[(?P<time>.*?)\] "GET (?P<uri>.*?) HTTP/1.\d" (?P<status_code>\d+) \d+ "(?P<referral>.*?)" "(?P<agent>.*?)"'
+    log_re = '(?P<ip>[.\d]+) - - \[(?P<time>.*?)\] "GET (?P<uri>.*?) HTTP/1.\d" (?P<status_code>\d+) (?P<bytes>\d+) "(?P<referral>.*?)" "(?P<agent>.*?)"'
     search = re.compile(log_re).search
-    matches = (search(line) for line in file(filename))
-    return (make_entry(x) for x in matches if x)
+    for line in open( filename, 'r' ):
+        x = search(line)
+        if x:
+            yield make_entry(x)
 
 def count_value(lst, key):
     d = {}
